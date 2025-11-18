@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Sensor Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <!-- Firebase Database -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-light: #8b5cf6;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --card-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            --card-shadow-hover: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-warning: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            --gradient-vibration: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            --gradient-loadcell: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            --gradient-speed: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+            --gradient-current: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            --gradient-cyber: linear-gradient(135deg, #00ff87 0%, #60efff 100%);
+            --gradient-neon: linear-gradient(135deg, #ff0080 0%, #ff8c00 100%);
+            --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(1deg); }
+        }
+
+        /* Navigation */
+            .navbar {
+        background: rgba(30, 41, 59, 0.95);
+        backdrop-filter: blur(20px);
+        box-shadow: var(--card-shadow);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        z-index: 1001;
+    }
+
+    .logo i {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--gradient-primary);
+        border-radius: 10px;
+        color: white;
+        font-size: 1.2rem;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .nav-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .nav-links a::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: -100%;
+        width: 100%;
+        height: 2px;
+        background: var(--gradient-primary);
+        transition: left 0.3s ease;
+    }
+
+    .nav-links a:hover {
+        color: var(--text-primary);
+    }
+
+    .nav-links a:hover::before {
+        left: 0;
+    }
+
+    /* Mobile Menu Button */
+    .mobile-menu-btn {
+        display: none;
+        background: none;
+        border: none;
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        z-index: 1001;
+    }
+
+    .mobile-menu-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Mobile Styles */
+    @media (max-width: 768px) {
+        .nav-container {
+            padding: 0 1rem;
+        }
+
+        .logo span {
+            font-size: 1.2rem;
+        }
+
+        .mobile-menu-btn {
+            display: block;
+        }
+
+        .nav-links {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(20px);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            transform: translateY(-100%);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+        .nav-links.active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nav-links a {
+            font-size: 1.2rem;
+            padding: 1rem 2rem;
+            width: 200px;
+            text-align: center;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a::before {
+            display: none;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .logo span {
+            font-size: 1rem;
+        }
+
+        .logo i {
+            width: 35px;
+            height: 35px;
+            font-size: 1rem;
+        }
+
+        .nav-links a {
+            font-size: 1.1rem;
+            padding: 0.8rem 1.5rem;
+            width: 180px;
+        }
+    }
+
+        /* Hero Section - Gamified Dark Theme */
+        .hero {
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 80%, rgba(245, 158, 11, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            color: white;
+            text-align: center;
+            padding: 6rem 2rem;
+            position: relative;
+            overflow: hidden;
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(99,102,241,0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,128C960,117,1056,75,1152,85.3C1248,96,1344,160,1392,192L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom,
+                linear-gradient(45deg, transparent 45%, rgba(96, 239, 255, 0.1) 50%, transparent 55%);
+            background-size: 100% auto, 300% 300%;
+            animation: shimmer 8s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: center bottom, 0% 0%; }
+            50% { background-position: center bottom, 100% 100%; }
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle, rgba(96, 239, 255, 0.1) 0%, transparent 70%),
+                radial-gradient(circle, rgba(255, 0, 128, 0.1) 0%, transparent 70%),
+                radial-gradient(circle, rgba(0, 255, 135, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #60efff 0%, #00ff87 50%, #ff0080 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 20px rgba(96, 239, 255, 0.3);
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% { text-shadow: 0 4px 20px rgba(96, 239, 255, 0.3); }
+            100% { text-shadow: 0 4px 30px rgba(96, 239, 255, 0.6), 0 0 40px rgba(96, 239, 255, 0.4); }
+        }
+
+        .hero p {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-bottom: 3rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .hero-stat {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem 1.5rem;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .hero-stat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .hero-stat:hover::before {
+            left: 100%;
+        }
+
+        .hero-stat:hover {
+            transform: translateY(-5px);
+            border-color: rgba(96, 239, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(96, 239, 255, 0.2);
+        }
+
+        .hero-stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            display: block;
+            background: var(--gradient-cyber);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(96, 239, 255, 0.3);
+        }
+
+        .hero-stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: var(--gradient-cyber);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .card.temperature::before {
+            background: var(--gradient-secondary);
+        }
+
+        .card.humidity::before {
+            background: var(--gradient-success);
+        }
+
+        .card.mpu::before {
+            background: var(--gradient-warning);
+        }
+
+        .card.vibration::before {
+            background: var(--gradient-vibration);
+        }
+
+        .card.loadcell::before {
+            background: var(--gradient-loadcell);
+        }
+
+        .card.health::before {
+            background: var(--gradient-primary);
+        }
+
+        .card.speed::before {
+            background: var(--gradient-speed);
+        }
+
+        .card.current::before {
+            background: var(--gradient-current);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .temperature .card-icon {
+            background: var(--gradient-secondary);
+        }
+
+        .humidity .card-icon {
+            background: var(--gradient-success);
+        }
+
+        .mpu .card-icon {
+            background: var(--gradient-warning);
+        }
+
+        .vibration .card-icon {
+            background: var(--gradient-vibration);
+        }
+
+        .loadcell .card-icon {
+            background: var(--gradient-loadcell);
+        }
+
+        .health .card-icon {
+            background: var(--gradient-primary);
+        }
+
+        .speed .card-icon {
+            background: var(--gradient-speed);
+        }
+
+        .current .card-icon {
+            background: var(--gradient-current);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .card-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .card-value {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 1.5rem 0;
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+
+        .card-unit {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .mpu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mpu-section h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .mpu-values {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .mpu-value {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            font-size: 0.875rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .mpu-value:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .mpu-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .mpu-number {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 200px;
+            margin-top: 1.5rem;
+        }
+
+        .system-info {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .system-status {
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.875rem;
+        }
+
+        .status-normal {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .status-critical {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .update-time {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Speed Content Layout */
+        .speed-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .speed-gauge-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .speed-chart-section {
+            width: 100%;
+        }
+
+        .speedometer-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .speed-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+        }
+
+        #speed-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: block;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .speed-unit {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            display: block;
+        }
+
+        /* Chart Container Improvements */
+        .chart-container {
+            width: 100%;
+            height: 120px;
+            margin-top: 0;
+            position: relative;
+        }
+
+        /* Remove default margins that might cause issues */
+        .speed .chart-container {
+            margin-top: 0;
+            padding-top: 0;
+        }
+
+        /* Connection Status */
+        .connection-status {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 1000;
+            box-shadow: var(--card-shadow-hover);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+        }
+
+        .status-connected {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+
+        .status-disconnected {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-connected .status-indicator {
+            background-color: var(--success);
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .status-disconnected .status-indicator {
+            background-color: var(--danger);
+            box-shadow: 0 0 10px var(--danger);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(15, 23, 42, 0.8);
+            border-top: 1px solid var(--border);
+            padding: 3rem 2rem 2rem;
+            margin-top: 4rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .footer-section p {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-icons a {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .social-icons a:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            border-color: transparent;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+        .delay-6 { animation-delay: 0.6s; }
+        .delay-7 { animation-delay: 0.7s; }
+
+        /* Loading states */
+        .loading {
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .hero {
+                padding: 4rem 1rem;
+                min-height: 70vh;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .hero-stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .dashboard {
+                padding: 2rem 1rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mpu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .connection-status {
+                bottom: 1rem;
+                right: 1rem;
+                padding: 0.75rem 1rem;
+            }
+
+            .speedometer-container {
+                width: 150px;
+                height: 150px;
+            }
+
+            #speed-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+
+    <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+        <div class="logo">
+            <i class="fas fa-car-side"></i>
+            <span>Remote Monitoring System For Vehicle Performance Dashboard</span>
+        </div>
+        
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn" id="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="nav-links" id="nav-links">
+            <a href="#home">Home</a>
+            <a href="#dashboard">Dashboard</a>
+            <a href="/about.html">About</a>
+            <a href="team.html">Team</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </div>
+</nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Vehicle Sensor Dashboard</h1>
+            <p>Real-time monitoring and analytics for your vehicle's sensor data with user-friendly and attractive visualizations</p>
+            
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-number">24/7</span>
+                    <span class="hero-stat-label">Monitoring</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">Real-time</span>
+                    <span class="hero-stat-label">Data Updates</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">Smart Analytics</span>
+                    <span class="hero-stat-label">User-friendly</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rest of your dashboard content remains exactly the same -->
+    <!-- Dashboard Section -->
+    <section class="dashboard" id="dashboard">
+        <h2 class="section-title">Live Sensor Data</h2>
+        
+        <div class="dashboard-grid">
+            <!-- Temperature Card -->
+            <div class="card temperature animate">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title">Temperature</h3>
+                        <p class="card-subtitle">Current ambient temperature</p>
+                    </div>
+                </div>
+                <div class="card-value">
+                    <span id="temp-value" class="loading">--</span>
+                    <span class="card-unit">°C</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="temp-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Humidity Card -->
+            <div class="card humidity animate delay-1">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title">Humidity</h3>
+                        <p class="card-subtitle">Relative humidity level</p>
+                    </div>
+                </div>
+                <div class="card-value">
+                    <span id="humid-value" class="loading">--</span>
+                    <span class="card-unit">%</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="humid-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Speed Card -->
+            <div class="card speed animate delay-2">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title">Speed</h3>
+                        <p class="card-subtitle">Current vehicle speed</p>
+                    </div>
+                </div>
+                
+                <div class="speed-content">
+                    <div class="speed-gauge-section">
+                        <div class="speedometer-container">
+                            <canvas id="speed-gauge"></canvas>
+                            <div class="speed-center">
+                                <span id="speed-value" class="loading">--</span>
+                                <span class="speed-unit">km/h</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="speed-chart-section">
+                        <div class="chart-container">
+                            <canvas id="speed-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Card -->
+            <div class="card current animate delay-3">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title">Current</h3>
+                        <p class="card-subtitle">Electrical current consumption</p>
+                    </div>
+                </div>
+                <div class="card-value">
+                    <span id="current-value" class="loading">--</span>
+                    <span class="card-unit">A</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="current-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Vibration Card -->
+            <div class="card vibration animate delay-4">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-wave-square"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title">Vibration</h3>
+                        <p class="card-subtitle">Vibration intensity level</p>
+                    </div>
+                </div>
+                <div class="card-value">
+                    <span id="vibration-value" class="loading">--</span>
+                    <span class="card-unit">units</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="vibration-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- LoadCell Card -->
+            <div class="card loadcell animate delay-5">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-weight-hanging"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title">Weight On Vehicle</h3>
+                        <p class="card-subtitle">Weight measurement</p>
+                    </div>
+                </div>
+                <div class="card-value">
+                    <span id="loadcell-value" class="loading">--</span>
+                    <span class="card-unit">kg</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="loadcell-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- MPU Status Card -->
+            <div class="card mpu animate delay-6">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-compass"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title">Accelometer</h3>
+                        <p class="card-subtitle">MPU6050 acceleration & gyroscope</p>
+                    </div>
+                </div>
+                
+                <div class="mpu-grid">
+                    <div class="mpu-section">
+                        <h4>Acceleration</h4>
+                        <div class="mpu-values">
+                            <div class="mpu-value">
+                                <span class="mpu-label">X-Axis:</span>
+                                <span class="mpu-number" id="ax-value">--</span>
+                            </div>
+                            <div class="mpu-value">
+                                <span class="mpu-label">Y-Axis:</span>
+                                <span class="mpu-number" id="ay-value">--</span>
+                            </div>
+                            <div class="mpu-value">
+                                <span class="mpu-label">Z-Axis:</span>
+                                <span class="mpu-number" id="az-value">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mpu-section">
+                        <h4>Gyroscope</h4>
+                        <div class="mpu-values">
+                            <div class="mpu-value">
+                                <span class="mpu-label">X-Axis:</span>
+                                <span class="mpu-number" id="gx-value">--</span>
+                            </div>
+                            <div class="mpu-value">
+                                <span class="mpu-label">Y-Axis:</span>
+                                <span class="mpu-number" id="gy-value">--</span>
+                            </div>
+                            <div class="mpu-value">
+                                <span class="mpu-label">Z-Axis:</span>
+                                <span class="mpu-number" id="gz-value">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="mpu-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- System Health Card -->
+            <div class="card health animate delay-7">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title">System Health</h3>
+                        <p class="card-subtitle">Overall system status</p>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="health-chart"></canvas>
+                </div>
+                
+                <div class="system-info">
+                    <div>
+                        <span class="system-status" id="system-status">Connecting...</span>
+                    </div>
+                    <div class="update-time">
+                        Last Update: <span id="update-time">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Connection Status Indicator -->
+    <div id="connection-status" class="connection-status status-disconnected">
+        <span class="status-indicator"></span>
+        <span id="status-text">Disconnected</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Remote Monitoring System For Vehicle Performance</h3>
+                <p>Advanced vehicle monitoring system that provides real-time analytics of your car's sensors and systems with beautiful, intuitive dashboards.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <p><a href="#home">Home</a></p>
+                <p><a href="#dashboard">Dashboard</a></p>
+                <p><a href="team.html">Team</a></p>
+                <p><a href="#contact">Contact</a></p>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p><i class="fas fa-envelope"></i> sumitkone19@gmail.com</p>
+                <p><i class="fas fa-phone"></i> +91 9527120264</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; SAS All rights reserved. 2025</p>
+        </div>
+    </footer>
+
+    <!-- Your existing JavaScript code remains exactly the same -->
+    <script>
+        // Firebase configuration - Replace with your project's config
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-9VCItBDLhQ3VZwIPR8YA8jJpceh5HIo",
+            authDomain: "major-project-6e62a.firebaseapp.com",
+            databaseURL: "https://major-project-6e62a-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "major-project-6e62a",
+            storageBucket: "major-project-6e62a.firebasestorage.app",
+            messagingSenderId: "437497138704",
+            appId: "1:437497138704:web:242f6971d55d3dc1d2c495",
+            measurementId: "G-6Y6WE7WPBC"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Initialize charts with empty data
+        let tempChart, humidChart, speedChart, currentChart, vibrationChart, loadcellChart, mpuChart, healthChart, speedGauge;
+        const maxDataPoints = 10; // Number of data points to show in charts
+        let tempData = [];
+        let humidData = [];
+        let speedData = [];
+        let currentData = [];
+        let vibrationData = [];
+        let loadcellData = [];
+        let mpuData = {
+            ax: [], ay: [], az: [],
+            gx: [], gy: [], gz: []
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize all charts
+            initializeCharts();
+            
+            // Listen for Firebase connection status
+            const connectedRef = firebase.database().ref(".info/connected");
+            connectedRef.on("value", function(snap) {
+                const connectionStatus = document.getElementById('connection-status');
+                const statusText = document.getElementById('status-text');
+                
+                if (snap.val() === true) {
+                    connectionStatus.className = "connection-status status-connected";
+                    statusText.textContent = "Connected to Firebase";
+                } else {
+                    connectionStatus.className = "connection-status status-disconnected";
+                    statusText.textContent = "Disconnected from Firebase";
+                }
+            });
+
+            // Start listening for real-time data
+            setupFirebaseListeners();
+        });
+
+        function initializeCharts() {
+            // Temperature Chart
+            const tempCtx = document.getElementById('temp-chart').getContext('2d');
+            tempChart = new Chart(tempCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: maxDataPoints}, (_, i) => ''),
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: [],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#f59e0b',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    },
+                    elements: {
+                        line: {
+                            borderJoinStyle: 'round'
+                        }
+                    }
+                }
+            });
+
+            // Humidity Chart
+            const humidCtx = document.getElementById('humid-chart').getContext('2d');
+            humidChart = new Chart(humidCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: maxDataPoints}, (_, i) => ''),
+                    datasets: [{
+                        label: 'Humidity (%)',
+                        data: [],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Speed Chart
+            const speedCtx = document.getElementById('speed-chart').getContext('2d');
+            speedChart = new Chart(speedCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: maxDataPoints}, (_, i) => ''),
+                    datasets: [{
+                        label: 'Speed (km/h)',
+                        data: [],
+                        borderColor: '#ff6b6b',
+                        backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#ff6b6b',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 120,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Current Chart
+            const currentCtx = document.getElementById('current-chart').getContext('2d');
+            currentChart = new Chart(currentCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: maxDataPoints}, (_, i) => ''),
+                    datasets: [{
+                        label: 'Current (A)',
+                        data: [],
+                        borderColor: '#4ecdc4',
+                        backgroundColor: 'rgba(78, 205, 196, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#4ecdc4',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Vibration Chart
+            const vibrationCtx = document.getElementById('vibration-chart').getContext('2d');
+            vibrationChart = new Chart(vibrationCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: maxDataPoints}, (_, i) => ''),
+                    datasets: [{
+                        label: 'Vibration',
+                        data: [],
+                        borderColor: '#ff9a9e',
+                        backgroundColor: 'rgba(255, 154, 158, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#ff9a9e',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // LoadCell Chart
+            const loadcellCtx = document.getElementById('loadcell-chart').getContext('2d');
+            loadcellChart = new Chart(loadcellCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: maxDataPoints}, (_, i) => ''),
+                    datasets: [{
+                        label: 'Load (kg)',
+                        data: [],
+                        borderColor: '#a1c4fd',
+                        backgroundColor: 'rgba(161, 196, 253, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#a1c4fd',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // MPU Chart
+            const mpuCtx = document.getElementById('mpu-chart').getContext('2d');
+            mpuChart = new Chart(mpuCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['AX', 'AY', 'AZ', 'GX', 'GY', 'GZ'],
+                    datasets: [{
+                        label: 'MPU Values',
+                        data: [0, 0, 0, 0, 0, 0],
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.8)',
+                            'rgba(139, 92, 246, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(168, 85, 247, 0.8)'
+                        ],
+                        borderColor: [
+                            '#6366f1',
+                            '#8b5cf6',
+                            '#10b981',
+                            '#f59e0b',
+                            '#ef4444',
+                            '#a855f7'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                callback: function(value) {
+                                    if (value >= 1000 || value <= -1000) {
+                                        return (value / 1000).toFixed(1) + 'K';
+                                    }
+                                    return value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Health Chart
+            const healthCtx = document.getElementById('health-chart').getContext('2d');
+            healthChart = new Chart(healthCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Normal', 'Warning', 'Critical'],
+                    datasets: [{
+                        label: 'System Health',
+                        data: [100, 0, 0],
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(239, 68, 68, 0.8)'
+                        ],
+                        borderColor: [
+                            '#10b981',
+                            '#f59e0b',
+                            '#ef4444'
+                        ],
+                        borderWidth: 2,
+                        cutout: '65%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                color: '#94a3b8'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Speed Gauge
+            const speedGaugeCtx = document.getElementById('speed-gauge').getContext('2d');
+            speedGauge = new Chart(speedGaugeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Speed', 'Remaining'],
+                    datasets: [{
+                        data: [0, 100],
+                        backgroundColor: [
+                            '#ff6b6b',
+                            '#334155'
+                        ],
+                        borderWidth: 0,
+                        circumference: 240,
+                        rotation: 150
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function setupFirebaseListeners() {
+            // Reference to your Firebase data structure
+            const tempRef = database.ref('Vehicle/temperature');
+            const humidRef = database.ref('Vehicle/humidity');
+            const vibrationRef = database.ref('Vehicle/Vibration');
+            const loadcellRef = database.ref('Vehicle/LoadCell');
+            const mpuRef = database.ref('Vehicle/MPU');
+            
+            // NEW: Add references for Speed and Current
+            const speedRef = database.ref('Vehicle/Speed');
+            const currentRef = database.ref('Vehicle/Current');
+            
+            // Listen for temperature changes
+            tempRef.on('value', (snapshot) => {
+                const tempValue = snapshot.val();
+                if (tempValue !== null) {
+                    document.getElementById('temp-value').textContent = tempValue.toFixed(1);
+                    document.getElementById('temp-value').classList.remove('loading');
+                    
+                    // Update chart data
+                    tempData.push(tempValue);
+                    if (tempData.length > maxDataPoints) {
+                        tempData.shift();
+                    }
+                    tempChart.data.datasets[0].data = tempData;
+                    tempChart.update('none');
+                    
+                    updateTimestamp();
+                }
+            });
+            
+            // Listen for humidity changes
+            humidRef.on('value', (snapshot) => {
+                const humidValue = snapshot.val();
+                if (humidValue !== null) {
+                    document.getElementById('humid-value').textContent = humidValue.toFixed(1);
+                    document.getElementById('humid-value').classList.remove('loading');
+                    
+                    // Update chart data
+                    humidData.push(humidValue);
+                    if (humidData.length > maxDataPoints) {
+                        humidData.shift();
+                    }
+                    humidChart.data.datasets[0].data = humidData;
+                    humidChart.update('none');
+                    
+                    updateTimestamp();
+                }
+            });
+
+            // NEW: Listen for Speed changes
+            speedRef.on('value', (snapshot) => {
+                const speedValue = snapshot.val();
+                if (speedValue !== null) {
+                    document.getElementById('speed-value').textContent = speedValue.toFixed(1);
+                    document.getElementById('speed-value').classList.remove('loading');
+                    
+                    // Update gauge
+                    const maxSpeed = 120;
+                    const speedPercentage = Math.min((speedValue / maxSpeed) * 100, 100);
+                    speedGauge.data.datasets[0].data = [speedPercentage, 100 - speedPercentage];
+                    
+                    // Change color based on speed
+                    if (speedValue > 80) {
+                        speedGauge.data.datasets[0].backgroundColor[0] = '#ef4444';
+                    } else if (speedValue > 50) {
+                        speedGauge.data.datasets[0].backgroundColor[0] = '#f59e0b';
+                    } else {
+                        speedGauge.data.datasets[0].backgroundColor[0] = '#10b981';
+                    }
+                    
+                    speedGauge.update('none');
+                    
+                    // Update chart data
+                    speedData.push(speedValue);
+                    if (speedData.length > maxDataPoints) {
+                        speedData.shift();
+                    }
+                    speedChart.data.datasets[0].data = speedData;
+                    speedChart.update('none');
+                    
+                    updateTimestamp();
+                }
+            });
+
+            // NEW: Listen for Current changes
+            currentRef.on('value', (snapshot) => {
+                const currentValue = snapshot.val();
+                if (currentValue !== null) {
+                    document.getElementById('current-value').textContent = currentValue.toFixed(2);
+                    document.getElementById('current-value').classList.remove('loading');
+                    
+                    // Update chart data
+                    currentData.push(currentValue);
+                    if (currentData.length > maxDataPoints) {
+                        currentData.shift();
+                    }
+                    currentChart.data.datasets[0].data = currentData;
+                    currentChart.update('none');
+                    
+                    updateTimestamp();
+                }
+            });
+
+            // Listen for vibration changes
+            vibrationRef.on('value', (snapshot) => {
+                const vibrationValue = snapshot.val();
+                if (vibrationValue !== null) {
+                    document.getElementById('vibration-value').textContent = vibrationValue.toFixed(1);
+                    document.getElementById('vibration-value').classList.remove('loading');
+                    
+                    // Update chart data
+                    vibrationData.push(vibrationValue);
+                    if (vibrationData.length > maxDataPoints) {
+                        vibrationData.shift();
+                    }
+                    vibrationChart.data.datasets[0].data = vibrationData;
+                    vibrationChart.update('none');
+                    
+                    updateTimestamp();
+                }
+            });
+
+            // Listen for loadcell changes
+            loadcellRef.on('value', (snapshot) => {
+                const loadcellValue = snapshot.val();
+                if (loadcellValue !== null) {
+                    document.getElementById('loadcell-value').textContent = loadcellValue.toFixed(1);
+                    document.getElementById('loadcell-value').classList.remove('loading');
+                    
+                    // Update chart data
+                    loadcellData.push(loadcellValue);
+                    if (loadcellData.length > maxDataPoints) {
+                        loadcellData.shift();
+                    }
+                    loadcellChart.data.datasets[0].data = loadcellData;
+                    loadcellChart.update('none');
+                    
+                    updateTimestamp();
+                }
+            });
+
+            // Listen for MPU6050 sensor changes
+            mpuRef.on('value', (snapshot) => {
+                const mpuValues = snapshot.val();
+                
+                if (mpuValues !== null) {
+                    // Update acceleration values - use direct properties
+                    document.getElementById('ax-value').textContent = mpuValues.ax !== undefined ? mpuValues.ax.toFixed(2) : '--';
+                    document.getElementById('ay-value').textContent = mpuValues.ay !== undefined ? mpuValues.ay.toFixed(2) : '--';
+                    document.getElementById('az-value').textContent = mpuValues.az !== undefined ? mpuValues.az.toFixed(2) : '--';
+                    
+                    // Update gyroscope values - use direct properties
+                    document.getElementById('gx-value').textContent = mpuValues.gx !== undefined ? mpuValues.gx.toFixed(2) : '--';
+                    document.getElementById('gy-value').textContent = mpuValues.gy !== undefined ? mpuValues.gy.toFixed(2) : '--';
+                    document.getElementById('gz-value').textContent = mpuValues.gz !== undefined ? mpuValues.gz.toFixed(2) : '--';
+                    
+                    // Store data for charts
+                    if (mpuValues.ax !== undefined) mpuData.ax.push(mpuValues.ax);
+                    if (mpuValues.ay !== undefined) mpuData.ay.push(mpuValues.ay);
+                    if (mpuValues.az !== undefined) mpuData.az.push(mpuValues.az);
+                    if (mpuValues.gx !== undefined) mpuData.gx.push(mpuValues.gx);
+                    if (mpuValues.gy !== undefined) mpuData.gy.push(mpuValues.gy);
+                    if (mpuValues.gz !== undefined) mpuData.gz.push(mpuValues.gz);
+                    
+                    // Limit data points
+                    Object.keys(mpuData).forEach(key => {
+                        if (mpuData[key].length > maxDataPoints) {
+                            mpuData[key].shift();
+                        }
+                    });
+                    
+                    // Update MPU chart with latest values
+                    const latestValues = [
+                        mpuValues.ax || 0,
+                        mpuValues.ay || 0,
+                        mpuValues.az || 0,
+                        mpuValues.gx || 0,
+                        mpuValues.gy || 0,
+                        mpuValues.gz || 0
+                    ];
+                    mpuChart.data.datasets[0].data = latestValues;
+                    mpuChart.update('none');
+                    
+                    updateTimestamp();
+                }
+            }, (error) => {
+                console.error("Error reading MPU data from Firebase:", error);
+                const statusElement = document.getElementById('system-status');
+                statusElement.textContent = 'MPU Data Error';
+                statusElement.className = 'system-status status-critical';
+            });
+            
+            // Listen for system status changes
+            const statusRef = database.ref('system/status');
+            statusRef.on('value', (snapshot) => {
+                const status = snapshot.val();
+                const statusElement = document.getElementById('system-status');
+                
+                if (status === 'normal') {
+                    statusElement.textContent = 'All Systems Normal';
+                    statusElement.className = 'system-status status-normal';
+                    healthChart.data.datasets[0].data = [100, 0, 0];
+                } else if (status === 'warning') {
+                    statusElement.textContent = 'System Warning';
+                    statusElement.className = 'system-status status-warning';
+                    healthChart.data.datasets[0].data = [70, 30, 0];
+                } else if (status === 'critical') {
+                    statusElement.textContent = 'Critical System Issue';
+                    statusElement.className = 'system-status status-critical';
+                    healthChart.data.datasets[0].data = [50, 20, 30];
+                } else {
+                    statusElement.textContent = 'Status Unknown';
+                    statusElement.className = 'system-status';
+                }
+                
+                healthChart.update('none');
+                updateTimestamp();
+            });
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour12: true, 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+            document.getElementById('update-time').textContent = timeString;
+        }
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add loading animation removal after initial load
+        setTimeout(() => {
+            document.querySelectorAll('.loading').forEach(el => {
+                el.classList.remove('loading');
+            });
+        }, 3000);
+
+
+    // Mobile menu functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const navLinks = document.getElementById('nav-links');
+        const menuIcon = mobileMenuBtn.querySelector('i');
+
+        mobileMenuBtn.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+            
+            // Toggle menu icon
+            if (navLinks.classList.contains('active')) {
+                menuIcon.className = 'fas fa-times';
+                document.body.style.overflow = 'hidden'; // Prevent scrolling when menu is open
+            } else {
+                menuIcon.className = 'fas fa-bars';
+                document.body.style.overflow = ''; // Restore scrolling
+            }
+        });
+
+        // Close menu when clicking on a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', function() {
+                navLinks.classList.remove('active');
+                menuIcon.className = 'fas fa-bars';
+                document.body.style.overflow = ''; // Restore scrolling
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.nav-container') && navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+                menuIcon.className = 'fas fa-bars';
+                document.body.style.overflow = ''; // Restore scrolling
+            }
+        });
+
+        // Close menu on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+                menuIcon.className = 'fas fa-bars';
+                document.body.style.overflow = ''; // Restore scrolling
+            }
+        });
+    });
+    </script>
+</body>
+</html>
