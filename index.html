@@ -11,6 +11,7 @@
     <!-- Firebase Database -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
+        /* Your existing CSS remains exactly the same */
         * {
             margin: 0;
             padding: 0;
@@ -75,180 +76,180 @@
         }
 
         /* Navigation */
-            .navbar {
-        background: rgba(30, 41, 59, 0.95);
-        backdrop-filter: blur(20px);
-        box-shadow: var(--card-shadow);
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        padding: 1rem 0;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .nav-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: relative;
-    }
-
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        z-index: 1001;
-    }
-
-    .logo i {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--gradient-primary);
-        border-radius: 10px;
-        color: white;
-        font-size: 1.2rem;
-    }
-
-    .nav-links {
-        display: flex;
-        gap: 2rem;
-        list-style: none;
-        transition: all 0.3s ease-in-out;
-    }
-
-    .nav-links a {
-        color: var(--text-secondary);
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .nav-links a::before {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: -100%;
-        width: 100%;
-        height: 2px;
-        background: var(--gradient-primary);
-        transition: left 0.3s ease;
-    }
-
-    .nav-links a:hover {
-        color: var(--text-primary);
-    }
-
-    .nav-links a:hover::before {
-        left: 0;
-    }
-
-    /* Mobile Menu Button */
-    .mobile-menu-btn {
-        display: none;
-        background: none;
-        border: none;
-        color: var(--text-primary);
-        font-size: 1.5rem;
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-        z-index: 1001;
-    }
-
-    .mobile-menu-btn:hover {
-        background: rgba(255, 255, 255, 0.1);
-    }
-
-    /* Mobile Styles */
-    @media (max-width: 768px) {
-        .nav-container {
-            padding: 0 1rem;
-        }
-
-        .logo span {
-            font-size: 1.2rem;
-        }
-
-        .mobile-menu-btn {
-            display: block;
-        }
-
-        .nav-links {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: rgba(15, 23, 42, 0.98);
+        .navbar {
+            background: rgba(30, 41, 59, 0.95);
             backdrop-filter: blur(20px);
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 2rem;
-            transform: translateY(-100%);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease-in-out;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
             z-index: 1000;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
         }
 
-        .nav-links.active {
-            transform: translateY(0);
-            opacity: 1;
-            visibility: visible;
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
         }
 
-        .nav-links a {
-            font-size: 1.2rem;
-            padding: 1rem 2rem;
-            width: 200px;
-            text-align: center;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .nav-links a:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .nav-links a::before {
-            display: none;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .logo span {
-            font-size: 1rem;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            z-index: 1001;
         }
 
         .logo i {
-            width: 35px;
-            height: 35px;
-            font-size: 1rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            transition: all 0.3s ease-in-out;
         }
 
         .nav-links a {
-            font-size: 1.1rem;
-            padding: 0.8rem 1.5rem;
-            width: 180px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
         }
-    }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-primary);
+            transition: left 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::before {
+            left: 0;
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .logo span {
+                font-size: 1.2rem;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background: rgba(15, 23, 42, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 2rem;
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease-in-out;
+                z-index: 1000;
+            }
+
+            .nav-links.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .nav-links a {
+                font-size: 1.2rem;
+                padding: 1rem 2rem;
+                width: 200px;
+                text-align: center;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            .nav-links a:hover {
+                background: rgba(255, 255, 255, 0.1);
+                transform: translateY(-2px);
+            }
+
+            .nav-links a::before {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo span {
+                font-size: 1rem;
+            }
+
+            .logo i {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+
+            .nav-links a {
+                font-size: 1.1rem;
+                padding: 0.8rem 1.5rem;
+                width: 180px;
+            }
+        }
 
         /* Hero Section - Gamified Dark Theme */
         .hero {
@@ -953,27 +954,27 @@
     <div class="bg-animation"></div>
 
     <!-- Navigation -->
-  <nav class="navbar">
-    <div class="nav-container">
-        <div class="logo">
-            <i class="fas fa-car-side"></i>
-            <span>Remote Monitoring System For Vehicle Performance Dashboard</span>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-car-side"></i>
+                <span>Remote Monitoring System For Vehicle Performance Dashboard</span>
+            </div>
+            
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" id="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="nav-links" id="nav-links">
+                <a href="#home">Home</a>
+                <a href="#dashboard">Dashboard</a>
+                <a href="/about.html">About</a>
+                <a href="team.html">Team</a>
+                <a href="contact.html">Contact</a>
+            </div>
         </div>
-        
-        <!-- Mobile Menu Button -->
-        <button class="mobile-menu-btn" id="mobile-menu-btn">
-            <i class="fas fa-bars"></i>
-        </button>
-        
-        <div class="nav-links" id="nav-links">
-            <a href="#home">Home</a>
-            <a href="#dashboard">Dashboard</a>
-            <a href="/about.html">About</a>
-            <a href="team.html">Team</a>
-            <a href="contact.html">Contact</a>
-        </div>
-    </div>
-</nav>
+    </nav>
 
     <!-- Hero Section -->
     <section class="hero" id="home">
@@ -998,7 +999,6 @@
         </div>
     </section>
 
-    <!-- Rest of your dashboard content remains exactly the same -->
     <!-- Dashboard Section -->
     <section class="dashboard" id="dashboard">
         <h2 class="section-title">Live Sensor Data</h2>
@@ -1142,7 +1142,7 @@
                         <i class="fas fa-compass"></i>
                     </div>
                     <div>
-                        <h3 class="card-title">Accelometer</h3>
+                        <h3 class="card-title">Accelerometer</h3>
                         <p class="card-subtitle">MPU6050 acceleration & gyroscope</p>
                     </div>
                 </div>
@@ -1254,9 +1254,8 @@
         </div>
     </footer>
 
-    <!-- Your existing JavaScript code remains exactly the same -->
     <script>
-        // Firebase configuration - Replace with your project's config
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyC-9VCItBDLhQ3VZwIPR8YA8jJpceh5HIo",
             authDomain: "major-project-6e62a.firebaseapp.com",
@@ -1737,224 +1736,233 @@
         }
 
         function setupFirebaseListeners() {
-            // Reference to your Firebase data structure
-            const tempRef = database.ref('Vehicle/temperature');
-            const humidRef = database.ref('Vehicle/humidity');
-            const vibrationRef = database.ref('Vehicle/Vibration');
-            const loadcellRef = database.ref('Vehicle/LoadCell');
-            const mpuRef = database.ref('Vehicle/MPU');
+            // References to your Firebase data structure based on your images
+            // Node1: Temperature, Humidity, MPU6050 (Accelerometer & Gyroscope)
+            // Node2: Vibration, Weight
+            // Node3: Current, HALL (Speed)
             
-            // NEW: Add references for Speed and Current
-            const speedRef = database.ref('Vehicle/Speed');
-            const currentRef = database.ref('Vehicle/Current');
-            
-            // Listen for temperature changes
-            tempRef.on('value', (snapshot) => {
-                const tempValue = snapshot.val();
-                if (tempValue !== null) {
-                    document.getElementById('temp-value').textContent = tempValue.toFixed(1);
-                    document.getElementById('temp-value').classList.remove('loading');
-                    
-                    // Update chart data
-                    tempData.push(tempValue);
-                    if (tempData.length > maxDataPoints) {
-                        tempData.shift();
-                    }
-                    tempChart.data.datasets[0].data = tempData;
-                    tempChart.update('none');
-                    
-                    updateTimestamp();
-                }
-            });
-            
-            // Listen for humidity changes
-            humidRef.on('value', (snapshot) => {
-                const humidValue = snapshot.val();
-                if (humidValue !== null) {
-                    document.getElementById('humid-value').textContent = humidValue.toFixed(1);
-                    document.getElementById('humid-value').classList.remove('loading');
-                    
-                    // Update chart data
-                    humidData.push(humidValue);
-                    if (humidData.length > maxDataPoints) {
-                        humidData.shift();
-                    }
-                    humidChart.data.datasets[0].data = humidData;
-                    humidChart.update('none');
-                    
-                    updateTimestamp();
-                }
-            });
-
-            // NEW: Listen for Speed changes
-            speedRef.on('value', (snapshot) => {
-                const speedValue = snapshot.val();
-                if (speedValue !== null) {
-                    document.getElementById('speed-value').textContent = speedValue.toFixed(1);
-                    document.getElementById('speed-value').classList.remove('loading');
-                    
-                    // Update gauge
-                    const maxSpeed = 120;
-                    const speedPercentage = Math.min((speedValue / maxSpeed) * 100, 100);
-                    speedGauge.data.datasets[0].data = [speedPercentage, 100 - speedPercentage];
-                    
-                    // Change color based on speed
-                    if (speedValue > 80) {
-                        speedGauge.data.datasets[0].backgroundColor[0] = '#ef4444';
-                    } else if (speedValue > 50) {
-                        speedGauge.data.datasets[0].backgroundColor[0] = '#f59e0b';
-                    } else {
-                        speedGauge.data.datasets[0].backgroundColor[0] = '#10b981';
-                    }
-                    
-                    speedGauge.update('none');
-                    
-                    // Update chart data
-                    speedData.push(speedValue);
-                    if (speedData.length > maxDataPoints) {
-                        speedData.shift();
-                    }
-                    speedChart.data.datasets[0].data = speedData;
-                    speedChart.update('none');
-                    
-                    updateTimestamp();
-                }
-            });
-
-            // NEW: Listen for Current changes
-            currentRef.on('value', (snapshot) => {
-                const currentValue = snapshot.val();
-                if (currentValue !== null) {
-                    document.getElementById('current-value').textContent = currentValue.toFixed(2);
-                    document.getElementById('current-value').classList.remove('loading');
-                    
-                    // Update chart data
-                    currentData.push(currentValue);
-                    if (currentData.length > maxDataPoints) {
-                        currentData.shift();
-                    }
-                    currentChart.data.datasets[0].data = currentData;
-                    currentChart.update('none');
-                    
-                    updateTimestamp();
-                }
-            });
-
-            // Listen for vibration changes
-            vibrationRef.on('value', (snapshot) => {
-                const vibrationValue = snapshot.val();
-                if (vibrationValue !== null) {
-                    document.getElementById('vibration-value').textContent = vibrationValue.toFixed(1);
-                    document.getElementById('vibration-value').classList.remove('loading');
-                    
-                    // Update chart data
-                    vibrationData.push(vibrationValue);
-                    if (vibrationData.length > maxDataPoints) {
-                        vibrationData.shift();
-                    }
-                    vibrationChart.data.datasets[0].data = vibrationData;
-                    vibrationChart.update('none');
-                    
-                    updateTimestamp();
-                }
-            });
-
-            // Listen for loadcell changes
-            loadcellRef.on('value', (snapshot) => {
-                const loadcellValue = snapshot.val();
-                if (loadcellValue !== null) {
-                    document.getElementById('loadcell-value').textContent = loadcellValue.toFixed(1);
-                    document.getElementById('loadcell-value').classList.remove('loading');
-                    
-                    // Update chart data
-                    loadcellData.push(loadcellValue);
-                    if (loadcellData.length > maxDataPoints) {
-                        loadcellData.shift();
-                    }
-                    loadcellChart.data.datasets[0].data = loadcellData;
-                    loadcellChart.update('none');
-                    
-                    updateTimestamp();
-                }
-            });
-
-            // Listen for MPU6050 sensor changes
-            mpuRef.on('value', (snapshot) => {
-                const mpuValues = snapshot.val();
-                
-                if (mpuValues !== null) {
-                    // Update acceleration values - use direct properties
-                    document.getElementById('ax-value').textContent = mpuValues.ax !== undefined ? mpuValues.ax.toFixed(2) : '--';
-                    document.getElementById('ay-value').textContent = mpuValues.ay !== undefined ? mpuValues.ay.toFixed(2) : '--';
-                    document.getElementById('az-value').textContent = mpuValues.az !== undefined ? mpuValues.az.toFixed(2) : '--';
-                    
-                    // Update gyroscope values - use direct properties
-                    document.getElementById('gx-value').textContent = mpuValues.gx !== undefined ? mpuValues.gx.toFixed(2) : '--';
-                    document.getElementById('gy-value').textContent = mpuValues.gy !== undefined ? mpuValues.gy.toFixed(2) : '--';
-                    document.getElementById('gz-value').textContent = mpuValues.gz !== undefined ? mpuValues.gz.toFixed(2) : '--';
-                    
-                    // Store data for charts
-                    if (mpuValues.ax !== undefined) mpuData.ax.push(mpuValues.ax);
-                    if (mpuValues.ay !== undefined) mpuData.ay.push(mpuValues.ay);
-                    if (mpuValues.az !== undefined) mpuData.az.push(mpuValues.az);
-                    if (mpuValues.gx !== undefined) mpuData.gx.push(mpuValues.gx);
-                    if (mpuValues.gy !== undefined) mpuData.gy.push(mpuValues.gy);
-                    if (mpuValues.gz !== undefined) mpuData.gz.push(mpuValues.gz);
-                    
-                    // Limit data points
-                    Object.keys(mpuData).forEach(key => {
-                        if (mpuData[key].length > maxDataPoints) {
-                            mpuData[key].shift();
+            // Listen for Node1 data
+            const node1Ref = database.ref('Vehicle/Node1');
+            node1Ref.on('value', (snapshot) => {
+                const node1Data = snapshot.val();
+                if (node1Data !== null) {
+                    // Temperature
+                    if (node1Data.TEMP !== undefined && node1Data.TEMP !== null) {
+                        const tempValue = node1Data.TEMP;
+                        document.getElementById('temp-value').textContent = tempValue.toFixed(1);
+                        document.getElementById('temp-value').classList.remove('loading');
+                        
+                        tempData.push(tempValue);
+                        if (tempData.length > maxDataPoints) {
+                            tempData.shift();
                         }
-                    });
+                        tempChart.data.datasets[0].data = tempData;
+                        tempChart.update('none');
+                    }
+                    
+                    // Humidity
+                    if (node1Data.HUM !== undefined && node1Data.HUM !== null) {
+                        const humidValue = node1Data.HUM;
+                        document.getElementById('humid-value').textContent = humidValue.toFixed(1);
+                        document.getElementById('humid-value').classList.remove('loading');
+                        
+                        humidData.push(humidValue);
+                        if (humidData.length > maxDataPoints) {
+                            humidData.shift();
+                        }
+                        humidChart.data.datasets[0].data = humidData;
+                        humidChart.update('none');
+                    }
+                    
+                    // MPU6050 - Acceleration
+                    if (node1Data.AX !== undefined && node1Data.AX !== null) {
+                        document.getElementById('ax-value').textContent = node1Data.AX.toFixed(2);
+                        mpuData.ax.push(node1Data.AX);
+                    }
+                    if (node1Data.AY !== undefined && node1Data.AY !== null) {
+                        document.getElementById('ay-value').textContent = node1Data.AY.toFixed(2);
+                        mpuData.ay.push(node1Data.AY);
+                    }
+                    if (node1Data.AZ !== undefined && node1Data.AZ !== null) {
+                        document.getElementById('az-value').textContent = node1Data.AZ.toFixed(2);
+                        mpuData.az.push(node1Data.AZ);
+                    }
+                    
+                    // MPU6050 - Gyroscope
+                    if (node1Data.GX !== undefined && node1Data.GX !== null) {
+                        document.getElementById('gx-value').textContent = node1Data.GX.toFixed(2);
+                        mpuData.gx.push(node1Data.GX);
+                    }
+                    if (node1Data.GY !== undefined && node1Data.GY !== null) {
+                        document.getElementById('gy-value').textContent = node1Data.GY.toFixed(2);
+                        mpuData.gy.push(node1Data.GY);
+                    }
+                    if (node1Data.GZ !== undefined && node1Data.GZ !== null) {
+                        document.getElementById('gz-value').textContent = node1Data.GZ.toFixed(2);
+                        mpuData.gz.push(node1Data.GZ);
+                    }
                     
                     // Update MPU chart with latest values
                     const latestValues = [
-                        mpuValues.ax || 0,
-                        mpuValues.ay || 0,
-                        mpuValues.az || 0,
-                        mpuValues.gx || 0,
-                        mpuValues.gy || 0,
-                        mpuValues.gz || 0
+                        node1Data.AX || 0,
+                        node1Data.AY || 0,
+                        node1Data.AZ || 0,
+                        node1Data.GX || 0,
+                        node1Data.GY || 0,
+                        node1Data.GZ || 0
                     ];
                     mpuChart.data.datasets[0].data = latestValues;
                     mpuChart.update('none');
                     
                     updateTimestamp();
                 }
-            }, (error) => {
-                console.error("Error reading MPU data from Firebase:", error);
-                const statusElement = document.getElementById('system-status');
-                statusElement.textContent = 'MPU Data Error';
-                statusElement.className = 'system-status status-critical';
             });
             
-            // Listen for system status changes
-            const statusRef = database.ref('system/status');
-            statusRef.on('value', (snapshot) => {
-                const status = snapshot.val();
+            // Listen for Node2 data
+            const node2Ref = database.ref('Vehicle/Node2');
+            node2Ref.on('value', (snapshot) => {
+                const node2Data = snapshot.val();
+                if (node2Data !== null) {
+                    // Vibration
+                    if (node2Data.VIB !== undefined && node2Data.VIB !== null) {
+                        const vibrationValue = node2Data.VIB;
+                        document.getElementById('vibration-value').textContent = vibrationValue.toFixed(1);
+                        document.getElementById('vibration-value').classList.remove('loading');
+                        
+                        vibrationData.push(vibrationValue);
+                        if (vibrationData.length > maxDataPoints) {
+                            vibrationData.shift();
+                        }
+                        vibrationChart.data.datasets[0].data = vibrationData;
+                        vibrationChart.update('none');
+                    }
+                    
+                    // Weight/LoadCell
+                    if (node2Data.WEIGHT !== undefined && node2Data.WEIGHT !== null) {
+                        // Convert from the value shown (0.004) to kg if needed
+                        // Assuming WEIGHT value is already in kg
+                        const weightValue = node2Data.WEIGHT;
+                        document.getElementById('loadcell-value').textContent = weightValue.toFixed(3);
+                        document.getElementById('loadcell-value').classList.remove('loading');
+                        
+                        loadcellData.push(weightValue);
+                        if (loadcellData.length > maxDataPoints) {
+                            loadcellData.shift();
+                        }
+                        loadcellChart.data.datasets[0].data = loadcellData;
+                        loadcellChart.update('none');
+                    }
+                    
+                    updateTimestamp();
+                }
+            });
+            
+            // Listen for Node3 data
+            const node3Ref = database.ref('Vehicle/Node3');
+            node3Ref.on('value', (snapshot) => {
+                const node3Data = snapshot.val();
+                if (node3Data !== null) {
+                    // Current
+                    if (node3Data.CUR !== undefined && node3Data.CUR !== null) {
+                        const currentValue = node3Data.CUR;
+                        document.getElementById('current-value').textContent = currentValue.toFixed(3);
+                        document.getElementById('current-value').classList.remove('loading');
+                        
+                        currentData.push(currentValue);
+                        if (currentData.length > maxDataPoints) {
+                            currentData.shift();
+                        }
+                        currentChart.data.datasets[0].data = currentData;
+                        currentChart.update('none');
+                    }
+                    
+                    // Speed (from HALL sensor)
+                    if (node3Data.HALL !== undefined && node3Data.HALL !== null) {
+                        // Convert HALL sensor value to speed (km/h)
+                        // You might need to adjust this conversion based on your sensor calibration
+                        const hallValue = node3Data.HALL;
+                        let speedValue = 0;
+                        
+                        // Simple conversion - adjust this formula based on your setup
+                        // Example: If HALL value is pulses per second, convert to km/h
+                        // Assuming hallValue is in RPM or similar, convert to km/h
+                        speedValue = hallValue * 0.06; // Adjust this conversion factor
+                        
+                        document.getElementById('speed-value').textContent = speedValue.toFixed(1);
+                        document.getElementById('speed-value').classList.remove('loading');
+                        
+                        // Update gauge
+                        const maxSpeed = 120;
+                        const speedPercentage = Math.min((speedValue / maxSpeed) * 100, 100);
+                        speedGauge.data.datasets[0].data = [speedPercentage, 100 - speedPercentage];
+                        
+                        // Change color based on speed
+                        if (speedValue > 80) {
+                            speedGauge.data.datasets[0].backgroundColor[0] = '#ef4444';
+                        } else if (speedValue > 50) {
+                            speedGauge.data.datasets[0].backgroundColor[0] = '#f59e0b';
+                        } else {
+                            speedGauge.data.datasets[0].backgroundColor[0] = '#10b981';
+                        }
+                        
+                        speedGauge.update('none');
+                        
+                        // Update chart data
+                        speedData.push(speedValue);
+                        if (speedData.length > maxDataPoints) {
+                            speedData.shift();
+                        }
+                        speedChart.data.datasets[0].data = speedData;
+                        speedChart.update('none');
+                    }
+                    
+                    updateTimestamp();
+                }
+            });
+            
+            // Update system status based on data
+            const updateSystemStatus = () => {
                 const statusElement = document.getElementById('system-status');
                 
-                if (status === 'normal') {
-                    statusElement.textContent = 'All Systems Normal';
-                    statusElement.className = 'system-status status-normal';
-                    healthChart.data.datasets[0].data = [100, 0, 0];
-                } else if (status === 'warning') {
-                    statusElement.textContent = 'System Warning';
-                    statusElement.className = 'system-status status-warning';
-                    healthChart.data.datasets[0].data = [70, 30, 0];
-                } else if (status === 'critical') {
+                // Simple system health check
+                // You can add more sophisticated checks here
+                let isWarning = false;
+                let isCritical = false;
+                
+                // Check temperature (example: warning if > 40°C, critical if > 50°C)
+                const tempValue = parseFloat(document.getElementById('temp-value').textContent);
+                if (tempValue > 50) {
+                    isCritical = true;
+                } else if (tempValue > 40) {
+                    isWarning = true;
+                }
+                
+                // Check speed (example: warning if > 100 km/h)
+                const speedValue = parseFloat(document.getElementById('speed-value').textContent);
+                if (speedValue > 100) {
+                    isWarning = true;
+                }
+                
+                // Update status
+                if (isCritical) {
                     statusElement.textContent = 'Critical System Issue';
                     statusElement.className = 'system-status status-critical';
                     healthChart.data.datasets[0].data = [50, 20, 30];
+                } else if (isWarning) {
+                    statusElement.textContent = 'System Warning';
+                    statusElement.className = 'system-status status-warning';
+                    healthChart.data.datasets[0].data = [70, 30, 0];
                 } else {
-                    statusElement.textContent = 'Status Unknown';
-                    statusElement.className = 'system-status';
+                    statusElement.textContent = 'All Systems Normal';
+                    statusElement.className = 'system-status status-normal';
+                    healthChart.data.datasets[0].data = [100, 0, 0];
                 }
                 
                 healthChart.update('none');
-                updateTimestamp();
-            });
+            };
+            
+            // Periodically update system status
+            setInterval(updateSystemStatus, 5000);
         }
 
         function updateTimestamp() {
@@ -1989,53 +1997,52 @@
             });
         }, 3000);
 
+        // Mobile menu functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const navLinks = document.getElementById('nav-links');
+            const menuIcon = mobileMenuBtn.querySelector('i');
 
-    // Mobile menu functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const navLinks = document.getElementById('nav-links');
-        const menuIcon = mobileMenuBtn.querySelector('i');
+            mobileMenuBtn.addEventListener('click', function() {
+                navLinks.classList.toggle('active');
+                
+                // Toggle menu icon
+                if (navLinks.classList.contains('active')) {
+                    menuIcon.className = 'fas fa-times';
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    menuIcon.className = 'fas fa-bars';
+                    document.body.style.overflow = '';
+                }
+            });
 
-        mobileMenuBtn.addEventListener('click', function() {
-            navLinks.classList.toggle('active');
-            
-            // Toggle menu icon
-            if (navLinks.classList.contains('active')) {
-                menuIcon.className = 'fas fa-times';
-                document.body.style.overflow = 'hidden'; // Prevent scrolling when menu is open
-            } else {
-                menuIcon.className = 'fas fa-bars';
-                document.body.style.overflow = ''; // Restore scrolling
-            }
-        });
+            // Close menu when clicking on a link
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', function() {
+                    navLinks.classList.remove('active');
+                    menuIcon.className = 'fas fa-bars';
+                    document.body.style.overflow = '';
+                });
+            });
 
-        // Close menu when clicking on a link
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', function() {
-                navLinks.classList.remove('active');
-                menuIcon.className = 'fas fa-bars';
-                document.body.style.overflow = ''; // Restore scrolling
+            // Close menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.nav-container') && navLinks.classList.contains('active')) {
+                    navLinks.classList.remove('active');
+                    menuIcon.className = 'fas fa-bars';
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // Close menu on escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && navLinks.classList.contains('active')) {
+                    navLinks.classList.remove('active');
+                    menuIcon.className = 'fas fa-bars';
+                    document.body.style.overflow = '';
+                }
             });
         });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', function(event) {
-            if (!event.target.closest('.nav-container') && navLinks.classList.contains('active')) {
-                navLinks.classList.remove('active');
-                menuIcon.className = 'fas fa-bars';
-                document.body.style.overflow = ''; // Restore scrolling
-            }
-        });
-
-        // Close menu on escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' && navLinks.classList.contains('active')) {
-                navLinks.classList.remove('active');
-                menuIcon.className = 'fas fa-bars';
-                document.body.style.overflow = ''; // Restore scrolling
-            }
-        });
-    });
     </script>
 </body>
 </html>
